@@ -2,7 +2,7 @@
 /* Auth Page */
 .logo {
 
-  background-image: url(../images/LSlogo.jpg);
+  background-image: url();
 
 }
 .text {
@@ -174,4 +174,5 @@
   width: 30px;
   height: 30px;
   margin: 5px;
+  background-color: #f5f5f55c;
 }
