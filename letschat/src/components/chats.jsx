@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
-import MessageCard from './MessageCard'; // Ensure this component is correctly implemented
-import MessageInput from './MessageInput'; // Ensure this component is correctly implemented
-import { addDoc, collection, doc, serverTimestamp, onSnapshot, query, where, orderBy, updateDoc } from 'firebase/firestore';
+import MessageCard from './msgDetails'; // Ensure this component is correctly implemented
+import MessageInput from './MsgInput'; // Ensure this component is correctly implemented
+import { addDoc, collection, doc, serverTimestamp, onSnapshot, query, where, orderBy, updateDoc, Firestore } from 'firebase/firestore';
 import { auth, db } from './firebaseConfig'; // Ensure the correct path
 
 const Chat = ({ user, selectedChatroom }) => {
@@ -28,7 +28,7 @@ const Chat = ({ user, selectedChatroom }) => {
       return;
     }
 
-    const q = query(collection(db, 'messages'), where("chatRoomId", "==", chatRoomId), orderBy('time', 'asc'));
+    const q = query(collection(Firestore, 'messages'), where("chatRoomId", "==", chatRoomId), orderBy('time', 'asc'));
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const msgs = snapshot.docs.map(doc => ({
         id: doc.id,
@@ -46,6 +46,7 @@ const Chat = ({ user, selectedChatroom }) => {
 
   // Send message
   const sendMessage = async () => {
+    const messagesCollection = collection(firestore, 'messages');
     if (message.trim() === '' && !image) {
       return;
     }
