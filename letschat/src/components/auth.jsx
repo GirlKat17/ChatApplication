@@ -1,6 +1,7 @@
 'use client'
 import { useState } from 'react';
 import { FcGoogle } from "react-icons/fc";
+import { FaFacebook } from "react-icons/fa";
 import { useRouter } from 'next/navigation';
 import { auth } from './firebaseConfig';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
@@ -21,7 +22,7 @@ const AuthPage = () => {
       console.log({ user });
       setEmail('');
       setPassword('');
-      router.push('/');
+      router.push('/page');
     } catch (error) {
       setError(error.message);
     }
@@ -36,7 +37,7 @@ const AuthPage = () => {
       setEmail('');
       setPassword('');
       setUsername('');
-      router.push('/');
+      router.push('/Page');
     } catch (error) {
       setError(error.message);
     }
@@ -54,14 +55,14 @@ const AuthPage = () => {
         {isLogin ?" Log in " : "Sign up"}
          </div>
      
-      {/* <div>connect with friends easily & quickly</div> */}
       <div className='intro' style={{ paddingBottom: "16px" }}>
         {isLogin ? "Welcome back! Sign in using your social account or email to continue" : " Get chatting with friends and family today by signing up for our chat app!!"}
       </div>
       <button className="btnGoogle" onClick={onClickGoogleSignIn}>
       
       {/* {isLogin ? 'Log In' : 'Sign Up'} */}
-      < FcGoogle style={{ fontSize: '30px' }}/>
+      < FcGoogle className='login-social-icon' style={{ fontSize: '30px' }}/>
+      <FaFacebook className='login-social-icon'  style={{ fontSize: '30px', paddingLeft:'10px', color:'darkblue' }} />
     </button>
       <form onSubmit={isLogin ? handleLogin : handleSignUp}>
         {!isLogin && (
