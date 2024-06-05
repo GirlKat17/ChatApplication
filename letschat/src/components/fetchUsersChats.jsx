@@ -1,20 +1,20 @@
 'use client'
 import { useEffect, useState, useCallback } from "react";
-import { db, app } from './firebaseConfig';
+import { firestore, app } from './firebaseConfig';
 import { collection, onSnapshot, query, addDoc, serverTimestamp, where, getDocs } from 'firebase/firestore';
 import { getAuth, signOut } from 'firebase/auth';
 import UsersCard from './userInfo';
 import { useRouter } from "next/navigation";
 import { toast } from 'react-hot-toast';
+import { HiUsers } from "react-icons/hi";
+import { HiChatBubbleLeftRight } from "react-icons/hi2";
 
-const COLLECTIONS = {
-  USERS: 'users',
-  CHATROOMS: 'chatrooms',
-};
+
 
 function Users({ userData, setSelectedChatroom }) {
   const [activeTab, setActiveTab] = useState('chatrooms');
   const [loading, setLoading] = useState({ users: false, chatrooms: false });
+  const [loading2, setLoading2] = useState(false);
   const [users, setUsers] = useState([]);
   const [userChatrooms, setUserChatrooms] = useState([]);
   const router = useRouter();
@@ -26,13 +26,13 @@ function Users({ userData, setSelectedChatroom }) {
 
   // Fetch all users
   useEffect(() => {
-    setLoading(prev => ({ ...prev, users: true }));
-    const tasksQuery = query(collection(db, COLLECTIONS.USERS));
+    setLoading2(prev => ({ ...prev, users: true }));
+    const tasksQuery = query(collection(firestore, 'users'));
 
     const unsubscribe = onSnapshot(tasksQuery, (snapshot) => {
-      const usersData = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-      setUsers(usersData);
-      setLoading(prev => ({ ...prev, users: false }));
+      const users = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+      setUsers(users);
+      setLoading2(prev => ({ ...prev, users: false }));
     });
 
     return () => unsubscribe();
@@ -40,23 +40,25 @@ function Users({ userData, setSelectedChatroom }) {
 
   // Fetch user's chatrooms
   useEffect(() => {
-    if (!userData?.id) return;
+    // Ensure userData is defined
     setLoading(prev => ({ ...prev, chatrooms: true }));
-
-    const chatroomsQuery = query(collection(db, COLLECTIONS.CHATROOMS), where('users', 'array-contains', userData.id));
+    if (!userData?.id) return;
+    const chatroomsQuery = query(collection(firestore, 'chatrooms'), where('users', 'array-contains', userData.id));
 
     const unsubscribeChatrooms = onSnapshot(chatroomsQuery, (snapshot) => {
       const chatroomsData = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-      setUserChatrooms(chatroomsData);
+      
       setLoading(prev => ({ ...prev, chatrooms: false }));
+      setUserChatrooms(chatroomsData);
     });
 
     return () => unsubscribeChatrooms();
   }, [userData]);
 
   // Create a chatroom
-  const createChat = useCallback(async (user) => {
-    const existingChatroomsQuery = query(collection(db, COLLECTIONS.CHATROOMS), where('users', '==', [userData.id, user.id]));
+  const createChat = async (user) => {
+
+    const existingChatroomsQuery = query(collection(firestore,'chatrooms'), where('users', '==', [userData.id, user.id]));
 
     try {
       const existingChatroomsSnapshot = await getDocs(existingChatroomsQuery);
@@ -78,32 +80,34 @@ function Users({ userData, setSelectedChatroom }) {
         lastMessage: null,
       };
 
-      const chatroomRef = await addDoc(collection(db, COLLECTIONS.CHATROOMS), chatroomData);
+      const chatroomRef = await addDoc(collection(firestore, 'chatrooms'), chatroomData);
+      console.log('Chatroom created with ID:', chatroomRef.id);
       setActiveTab("chatrooms");
     } catch (error) {
       console.error('Error creating or checking chatroom:', error);
     }
-  }, [userData]);
+  };
 
   // Open chatroom
-  const openChat = useCallback((chatroom) => {
+  const openChat = async  (chatroom) => {
+   
     const data = {
       id: chatroom.id,
       myData: userData,
       otherData: chatroom.usersData[chatroom.users.find((id) => id !== userData.id)],
     };
     setSelectedChatroom(data);
-  }, [userData, setSelectedChatroom]);
+  };
 
-  const logoutClick = useCallback(() => {
+  const logoutClick = () => {
     signOut(auth)
       .then(() => {
-        router.push('/login');
+        router.push('/auth');
       })
       .catch((error) => {
         console.error('Error logging out:', error);
       });
-  }, [auth, router]);
+  };
 
   return (
     <div className='shadow-lg h-screen overflow-auto mt-4 mb-20'>
@@ -112,13 +116,13 @@ function Users({ userData, setSelectedChatroom }) {
           className={`btn btn-outline ${activeTab === 'users' ? 'btn-primary' : ''}`}
           onClick={() => handleTabClick('users')}
         >
-          Users
+         <HiUsers />
         </button>
         <button
           className={`btn btn-outline ${activeTab === 'chatrooms' ? 'btn-primary' : ''}`}
           onClick={() => handleTabClick('chatrooms')}
         >
-          Chatrooms
+         <HiChatBubbleLeftRight />
         </button>
         <button
           className={`btn btn-outline`}
@@ -132,16 +136,16 @@ function Users({ userData, setSelectedChatroom }) {
         {activeTab === 'chatrooms' && (
           <>
             <h1 className='px-4 text-base font-semibold'>Chatrooms</h1>
-            {loading.chatrooms && (
+            {loading && (
               <div className="flex justify-center items-center h-full">
                 <span className="loading loading-spinner text-primary"></span>
               </div>
             )}
             {userChatrooms.map((chatroom) => (
-              <div key={chatroom.id} onClick={() => openChat(chatroom)}>
+              <div key={chatroom.id} onClick={() => {openChat(chatroom)}}>
                 <UsersCard
                   name={chatroom.usersData[chatroom.users.find((id) => id !== userData?.id)].name}
-                  UserProfilepic={chatroom.usersData[chatroom.users.find((id) => id !== userData?.id)].UserProfilepic}
+                  avatarUrl={chatroom.usersData[chatroom.users.find((id) => id !== userData?.id)].avatarUrl}
                   latestMessage={chatroom.lastMessage}
                   type={"chat"}
                 />
@@ -153,23 +157,25 @@ function Users({ userData, setSelectedChatroom }) {
         {activeTab === 'users' && (
           <>
             <h1 className='mt-4 px-4 text-base font-semibold'>Users</h1>
-            {loading.users && (
+            {loading2 && (
               <div className="flex justify-center items-center h-full">
                 <span className="loading loading-spinner text-primary"></span>
               </div>
             )}
             {users.map((user) => (
-              user.id !== userData?.id && (
-                <div key={user.id} onClick={() => createChat(user)}>
+                      <div key={user.id} onClick={() => createChat(user)}>
+             { user.id !== userData?.id && 
+        
                   <UsersCard
                     name={user.name}
-                    UserProfilepic={user.UserProfilepic}
+                    avatarUrl={user.avatarUrl}
                     latestMessage={""}
                     type={"user"}
                   />
-                </div>
+             }
+              </div>
               )
-            ))}
+            )}
           </>
         )}
       </div>
