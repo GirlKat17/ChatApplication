@@ -1,10 +1,10 @@
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
 
 /* Auth Page */
-.logo {
 
-  background-image: url();
-
-}
 .text {
   padding-bottom: 12px;
 }
@@ -176,3 +176,79 @@
   margin: 5px;
   background-color: #f5f5f55c;
 }
+
+.landingpage{
+  background-image: url(../images/pexels-apasaric-325185.jpg);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  height: 100%;
+  width: 100%;
+  background-size: cover;
+  background-position: center
+}
+
+.landingtext{
+  font-size: 35px;
+  text-align: center;
+  font-weight: 600;
+margin-left: 150px;
+  margin-bottom: 100px;
+}
+
+.landingBtn {
+  background-color: #f0f3f30f;
+  border: none;
+padding-right: 700px;
+  color: rgb(7, 7, 7);
+  font-size: .875rem;
+  border-radius: .25rem;
+  cursor: pointer;
+  margin-top: 70px;
+
+  text-decoration: underline;
+}
+
+/* Main Chat area */
+.chat-area {
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+  &-header {
+   display: flex;
+   position: sticky;
+   top: 0;
+   left: 0;
+   z-index: 2;
+   width: 100%;
+   align-items: center;
+   justify-content: space-between;
+   padding: 20px;
+   background: var(--chat-header-bg);
+  }
+  &-profile {
+   width: 32px;
+   border-radius: 50%;
+   object-fit: cover;
+  }
+  &-title {
+   font-size: 18px;
+   font-weight: 600;
+  }
+  &-main {
+   flex-grow: 1;
+  }
+ }
+
+ .chat-area-footer {
+  display: flex;
+  border-top: 1px solid var(--border-color);
+  width: 100%;
+  padding: 10px 20px;
+  align-items: center;
+  background-color: var(--theme-bg-color);
+  position: sticky;
+  bottom: 0;
+  left: 0;
+ }
