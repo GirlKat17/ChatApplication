@@ -1,8 +1,8 @@
 import React, { useEffect, useState, useRef } from 'react';
-import MessageCard from './msgDetails'; // Ensure this component is correctly implemented
-import MessageInput from './MsgInput'; // Ensure this component is correctly implemented
-import { addDoc, collection, doc, serverTimestamp, onSnapshot, query, where, orderBy, updateDoc, Firestore } from 'firebase/firestore';
-import { auth, db } from './firebaseConfig'; // Ensure the correct path
+import MessageCard from './msgDetails'; 
+import MessageInput from './MsgInput'; 
+import { addDoc, collection, doc, serverTimestamp, onSnapshot, query, where, orderBy, updateDoc } from 'firebase/firestore';
+import { firestore } from './firebaseConfig';
 
 const Chat = ({ user, selectedChatroom }) => {
   const me = selectedChatroom?.myData;
@@ -28,7 +28,7 @@ const Chat = ({ user, selectedChatroom }) => {
       return;
     }
 
-    const q = query(collection(Firestore, 'messages'), where("chatRoomId", "==", chatRoomId), orderBy('time', 'asc'));
+    const q = query(collection(firestore, 'messages'), where("chatRoomId", "==", chatRoomId), orderBy('time', 'asc'));
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const msgs = snapshot.docs.map(doc => ({
         id: doc.id,
@@ -47,6 +47,11 @@ const Chat = ({ user, selectedChatroom }) => {
   // Send message
   const sendMessage = async () => {
     const messagesCollection = collection(firestore, 'messages');
+    if (!me || !chatRoomId) {
+      console.error("User or chat room is not defined");
+      return;
+    }
+
     if (message.trim() === '' && !image) {
       return;
     }
@@ -60,11 +65,11 @@ const Chat = ({ user, selectedChatroom }) => {
         image: image || null,
       };
 
-      await addDoc(collection(db, 'messages'), newMessage);
+      await addDoc(collection(firestore, 'messages'), newMessage);
       setMessage('');
       setImage(null);
 
-      const chatroomRef = doc(db, 'chatrooms', chatRoomId);
+      const chatroomRef = doc(firestore, 'chatrooms', chatRoomId);
       await updateDoc(chatroomRef, { lastMessage: message ? message : "Image" });
 
       if (messagesContainerRef.current) {
