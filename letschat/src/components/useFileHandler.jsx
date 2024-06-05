@@ -1,3 +1,4 @@
+// hooks/useFileHandler.js
 import { useState, useCallback } from 'react';
 import { getStorage, ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import { app } from './firebaseConfig';
