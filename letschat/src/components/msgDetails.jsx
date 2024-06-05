@@ -3,26 +3,36 @@ import PropTypes from 'prop-types';
 import moment from 'moment';
 
 function MessageCard({ message, me, other }) {
-  const IndvMsg = useMemo(() => message.sender === me.id, [message.sender, me.id]);
+  const IndvMsg = message.sender === me.id;
 
-  const TimeDetails = useMemo(() => {
-    const date = message?.time?.toDate();
+  const TimeDetails = ((timestamp) => {
+    const date = timestamp?.toDate();
     return moment(date).fromNow();
   }, [message?.time]);
 
   return (
     <div key={message.id} className={`flex mb-4 ${IndvMsg  ? 'justify-end' : 'justify-start'}`}>
       <div className={`w-10 h-10 ${IndvMsg? 'ml-2 mr-2' : 'mr-2'}`}>
+        {!IndvMsg && (
         <img
-          className=''
-          src={IndvMsg? me.UserProfilepic : other.UserProfilepic}
+          className='w-full h-full object-cover rounded-full'
+          src={me.avatarUrl}
           alt='Avatar'
         />
+        )}
+  { !IndvMsg && (
+        <img
+          className='w-full h-full object-cover rounded-full'
+          src={other.avatarUrl}
+          alt='Avatar'
+        />
+        )}
+
       </div>
       <div className={`text-white p-2 rounded-md ${IndvMsg ? 'bg-blue-500 self-end' : 'bg-[#19D39E] self-start'}`}>
-        {message.image && <img src={message.image} className='' alt='Message attachment' />}
+        {message.image && <img src={message.image} className='max-h-60 w-60 mb-4' alt='Message attachment' />}
         <p>{message.content}</p>
-        <div className=''>{TimeDetails}</div>
+        <div className='text-xs text-gray-200'>{TimeDetails(message.time)}</div>
       </div>
     </div>
   );
