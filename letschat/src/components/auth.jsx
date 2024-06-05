@@ -7,7 +7,7 @@ import { auth } from './firebaseConfig';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { signInWithRedirect, GoogleAuthProvider } from "firebase/auth";
 
-const AuthPage = () => {
+const AuthPage = ({ onAuthSuccess }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [username, setUsername] = useState('');
@@ -18,11 +18,12 @@ const AuthPage = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const user = await signInWithEmailAndPassword(auth, email, password);
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
       console.log({ user });
       setEmail('');
       setPassword('');
-      router.push('/page');
+      onAuthSuccess(user); // Notify the parent component of successful login
     } catch (error) {
       setError(error.message);
     }
@@ -33,11 +34,12 @@ const AuthPage = () => {
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       await updateProfile(userCredential.user, { displayName: username });
-      console.log({ user: userCredential.user });
+      const user = userCredential.user;
+      console.log({ user });
       setEmail('');
       setPassword('');
       setUsername('');
-      router.push('/Page');
+      onAuthSuccess(user); // Notify the parent component of successful signup
     } catch (error) {
       setError(error.message);
     }
@@ -50,7 +52,7 @@ const AuthPage = () => {
   return (
     <div className='cover'>
     <div className="container">
-      {/* <div className = 'logo'> 🤖 ChatBox </div> */}
+      {/* <div className = ''> 🤖 ChatBox </div> */}
       <div className ="headings">
         {isLogin ?" Log in " : "Sign up"}
          </div>
