@@ -108,6 +108,7 @@ import { doc, getDoc } from 'firebase/firestore';
 import { useRouter } from 'next/navigation';
 import Users from '../components/fetchUsersChats';
 import ChatRoom from '../components/chats';
+import Login from '../components/login';
 
 function Page() {
   const auth = getAuth(app);
@@ -128,7 +129,7 @@ function Page() {
         }
       } else {
         setUser(null);
-        router.push('/login');
+        router.push('/landingpage');
       }
     });
     return () => unsubscribe();
