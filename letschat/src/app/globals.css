@@ -178,7 +178,7 @@
 }
 
 .landingpage{
-  background-image: url(../images/pexels-apasaric-325185.jpg);
+  background-image: url(../images/logincheck.avif);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -193,19 +193,23 @@
   font-size: 35px;
   text-align: center;
   font-weight: 600;
+  margin-top: 1px;
 margin-left: 150px;
+color: white;
   margin-bottom: 100px;
+  padding-left: 200px;
 }
 
 .landingBtn {
-  background-color: #f0f3f30f;
+  background-color: #f0f3f300;
   border: none;
-padding-right: 700px;
-  color: rgb(7, 7, 7);
+margin-right: 5px;
+  color: rgb(241, 241, 241);
   font-size: .875rem;
   border-radius: .25rem;
   cursor: pointer;
-  margin-top: 70px;
+  padding-right: px;
+  margin-top: 1px;
 
   text-decoration: underline;
 }
