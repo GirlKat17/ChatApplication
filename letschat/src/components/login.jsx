@@ -112,6 +112,9 @@ import { auth } from './firebaseConfig';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { toast } from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
+import { FcGoogle } from "react-icons/fc";
+import { FaFacebook } from "react-icons/fa";
+import { signInWithRedirect, GoogleAuthProvider } from "firebase/auth";
 import Link from 'next/link';
 
 function login() {
@@ -157,16 +160,27 @@ function login() {
     setLoading(false);
     
   };
+  const onClickGoogleSignIn = () => {
+      signInWithRedirect(auth, new GoogleAuthProvider());
+     };
+  const handleSignUpClick = () => {
+    router.push('/register'); // Redirect to the register page
+  };
  
   return (
     <div className="flex justify-center items-center h-screen font-primary p-10 m-2">
 
+      
       {/*form*/}
       <form onSubmit={handleSubmit} className="space-y-4 w-full max-w-2xl shadow-lg p-10">
     
-        <h1 className='font-secondary text-xl text-center font-semibold text-[#0b3a65ff]'>Chat<span className='font-bold text-[#eeab63ff]'></span>Box</h1>
-
-      
+        <h1 className='font-secondary text-xl text-center font-semibold text-[#0b3a65ff]'>Chat<span className='font-bold text-[#eeab63ff]'>🤖</span>Box</h1>
+        <button className="btnGoogle" onClick={onClickGoogleSignIn}>
+         < FcGoogle className='login-social-icon' style={{ fontSize: '30px', paddingLeft:'10px',marginLeft:'95px' }}/>
+        </button>
+      <button> 
+      <FaFacebook className='login-social-icon'  style={{ fontSize: '50px', paddingLeft:'10px', color:'darkblue' }} />
+      </button>
          {/*email*/}
         <div>
           <label className="label">
@@ -197,21 +211,21 @@ function login() {
           {errors.password && <span className="text-red-500">{errors.password}</span>}
         </div>
 
-        
+
 
         <div>
-          <button type='submit' className="btn btn-block bg-[#0b3a65ff] text-white">
+          <button type='submit' className="btn btn-block bg-[#008B8B] text-white">
             {
-              loading? <span className="loading loading-spinner loading-sm"></span> : 'Sign In'
+              loading? <span className="loading loading-spinner loading-sm"></span> : 'Login'
             }
           </button>
         </div>
 
          <span>
            Don't have an account?{' '}
-           <Link href="/register" className="text-blue-600 hover:text-blue-800 hover:underline">
+           <button onClick={handleSignUpClick} className="text-blue-600 hover:text-green-800 hover:underline">
             Register
-          </Link>
+          </button>
         </span>
       
       </form>
