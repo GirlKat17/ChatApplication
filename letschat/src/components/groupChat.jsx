@@ -45,7 +45,10 @@ function CreateGroupChat({ userData, onGroupChatCreated }) {
         users: [userData.id, ...selectedUsers],
         timestamp: serverTimestamp(),
         lastMessage: null,
+        img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTYHhGhXhFe3oVEUtgg6aNTIrXRTttjYYQFcg&usqp=CAU'
       };
+
+
 
       const groupChatRef = await addDoc(collection(firestore, 'groupChats'), groupChatData);
       toast.success('Group chat created successfully!');

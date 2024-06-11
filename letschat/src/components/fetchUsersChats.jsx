@@ -197,6 +197,7 @@ import { HiUsers } from "react-icons/hi";
 import { HiChatBubbleLeftRight } from "react-icons/hi2";
 import { HiUserGroup } from "react-icons/hi";
 import CreateGroupChat from './groupChat';
+import y from '../images/groupava.jpg'
 
 function Users({ userData, setSelectedChatroom }) {
   const [activeTab, setActiveTab] = useState('chatrooms');
@@ -396,7 +397,8 @@ const openChat = async (chatroom) => {
             }
             {
               users.map((user) => (
-                <div key={user.id} onClick={() => { createChat(user) }}>
+                
+                <div key={user.id} onClick={() => { createChat(user),console.log(user) }}>
                   {user.id !== userData?.id &&
                     <UsersCard
                       name={user.name}
@@ -417,13 +419,16 @@ const openChat = async (chatroom) => {
             <CreateGroupChat userData={userData} onGroupChatCreated={() => setActiveTab('groupchat')} />
             {
               groupChats.map((groupChat) => (
-                <div key={groupChat.id} onClick={() => { openChat(groupChat) }}>
+                <div key={groupChat.id} onClick={() => { openChat(groupChat) }} style={{ display:' flex'}}>
                   <UsersCard
-                    name={groupChat.name}
-                    avatarUrl={groupChat.avatarUrl || './images/groupava.jpg'} // Replace with actual group avatar if available
+                    name={groupChat.name} 
+                    avatarUrl={groupChat.img} // Replace with actual group avatar if available
                     latestMessage={groupChat.lastMessage}
+                    time={''}
                     type={"group"}
                   />
+               <p><b>{groupChat.name}</b></p>
+
                 </div>
               ))
             }
